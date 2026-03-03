@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const CodeSnippetPanel = ({ snippets, onSnippetClick }) => {
-  const [clickedIds, setClickedIds] = useState([]);
+  const [usedSnippets, setUsedSnippets] = useState([]);
 
   const handleClick = (snippet) => {
-    if (!clickedIds.includes(snippet.id)) {
-      setClickedIds([...clickedIds, snippet.id]);
+    if (!usedSnippets.includes(snippet.id)) {
+      setUsedSnippets([...usedSnippets, snippet.id]);
+      onSnippetClick(snippet.code);
     }
-    onSnippetClick(snippet.code);
   };
 
   return (
@@ -17,15 +17,18 @@ const CodeSnippetPanel = ({ snippets, onSnippetClick }) => {
       {snippets.map((snippet) => (
         <motion.div
           key={snippet.id}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: usedSnippets.includes(snippet.id) ? 1 : 1.02 }}
           className={`p-3 rounded-xl cursor-pointer transition-all ${
-            clickedIds.includes(snippet.id)
-              ? 'bg-gray-700/50 opacity-60 line-through'
-              : 'glass-3d'
+            usedSnippets.includes(snippet.id)
+              ? 'bg-gray-700/50 opacity-60 line-through pointer-events-none'
+              : 'glass-3d hover:shadow-amber-500/20'
           }`}
           onClick={() => handleClick(snippet)}
         >
-          <p className="text-sm">{snippet.label}</p>
+          <p className="text-sm font-semibold text-amber-200 mb-1">{snippet.label}</p>
+          <pre className="text-xs bg-black/30 p-2 rounded-lg overflow-x-auto text-gray-300">
+            {snippet.code}
+          </pre>
         </motion.div>
       ))}
     </div>
