@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    direction: rtl;
+  }
+  body {
+    @apply bg-gray-900 text-white font-sans;
+  }
+}
+
+.glass-3d {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(2deg) rotateY(1deg);
+  transition: transform 0.2s ease;
+}
+.glass-3d:hover {
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-4px);
+}
