@@ -5,12 +5,23 @@ import Editor from './Editor';
 import Preview from './Preview';
 
 const Workspace = ({ mission, userCode, onCodeChange, onSnippetClick }) => {
-  const [progress, setProgress] = useState(0);
+  const [usedSnippetsCount, setUsedSnippetsCount] = useState(0);
+  const totalSnippets = mission.snippets.length;
 
-  useEffect(() => {
-    // محاكاة نسبة التقدم (يمكن تطويرها لاحقاً)
-    setProgress(33);
-  }, [mission]);
+  // نحتاج لمعرفة عدد الكتل المستخدمة، سنعتمد على تمرير callback من الابن
+  // لتحديث العدد. سنضيف دالة في onSnippetClick تقوم بزيادة العداد.
+  // لكن لتسهيل الأمور، سنفترض أن onSnippetClick سيرسل لنا إشارة.
+  // بدلاً من ذلك، سنقوم بحساب التقدم بناءً على طول userCode؟ ليس دقيقاً.
+  // الأفضل أن يكون لدينا حالة في Workspace تتغير عند كل ضغطة.
+  // سنضيف useState للـ usedCount ونمرر دالة لـ CodeSnippetPanel لتحديثه.
+
+  const handleSnippetClick = (code) => {
+    onSnippetClick(code);
+    setUsedSnippetsCount(prev => prev + 1);
+  };
+
+  // حساب نسبة التقدم
+  const progress = totalSnippets > 0 ? Math.min(100, Math.round((usedSnippetsCount / totalSnippets) * 100)) : 0;
 
   return (
     <div className="glass-3d rounded-3xl p-6 mt-4">
@@ -22,7 +33,7 @@ const Workspace = ({ mission, userCode, onCodeChange, onSnippetClick }) => {
         </div>
         <div className="w-full bg-gray-700 rounded-full h-2">
           <div
-            className="bg-gradient-to-l from-amber-400 to-purple-500 h-2 rounded-full"
+            className="bg-gradient-to-l from-amber-400 to-purple-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -41,7 +52,7 @@ const Workspace = ({ mission, userCode, onCodeChange, onSnippetClick }) => {
       {/* Split screen */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-1">
-          <CodeSnippetPanel snippets={mission.snippets} onSnippetClick={onSnippetClick} />
+          <CodeSnippetPanel snippets={mission.snippets} onSnippetClick={handleSnippetClick} />
         </div>
         <div className="lg:col-span-2 space-y-4">
           <Editor code={userCode} onChange={onCodeChange} />
